@@ -14,6 +14,6 @@ while len(tmp) <= len(x) // 39:
         i += 1
     tmp.append(tmp2[:-1])
 
-with open('result addresses.txt', 'w') as file:
+with open('addresses.txt', 'w') as file:
     for i in tmp:
         file.write(i + '\n')
