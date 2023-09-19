@@ -1,5 +1,3 @@
 # gnosis_safe
-formater addresses.py, all addresses.txt - для формирования данных для addresses.txt. Для начала вставь аддреса в all addresses.txt, запусти formater addresses.py, результат работы попадёт в addresses.txt.
 
-
-gnosis.py, addresses.txt - Софт нужно кормить addresses.txt, в результате создаст hashes.txt, в котором будут хеши отправленных транзакций
+Soft creates gnosis safe. Before running gnosis.py, add your private keys to the privates.txt file. Result will be written to the file "safe created hashes.txt" in the format sender_private;sender_private;tx_hash
