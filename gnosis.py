@@ -16,10 +16,13 @@ colors = {
     'reset': Fore.RESET
 }
 
-web3 = Web3(Web3.HTTPProvider(op_rpc))
-eth_web3 = Web3(Web3.HTTPProvider(eth_rpc))
+web3 = Web3(Web3.HTTPProvider(rpcs[chain]))
+if chain == 'eth':
+    eth_web3 = web3
+elif chain in ['op', 'era', 'base', 'arb']:
+    eth_web3 = Web3(Web3.HTTPProvider(rpcs['eth']))
 Account.enable_unaudited_hdwallet_features()
-safe_contract = web3.eth.contract(address=web3.to_checksum_address(safe_address), abi=safe_abi)
+safe_contract = web3.eth.contract(address=web3.to_checksum_address(safe_addresses[chain]), abi=safe_abi)
 
 
 def read_file(filename, read_type='r'):
@@ -42,9 +45,10 @@ def new_print(message_type, message, is_error=False):
 
 
 def wait_normal_gwei():
-    while (eth_gwei := web3.from_wei(eth_web3.eth.gas_price, 'gwei')) > max_gwei:
-        new_print('INFO', f"Current gas fee {eth_gwei} gwei > {max_gwei} gwei. Waiting for 17 seconds...")
-        time.sleep(17)
+    if chain in ['op', 'era', 'base', 'eth', 'arb']:
+        while (eth_gwei := web3.from_wei(eth_web3.eth.gas_price, 'gwei')) > max_gwei:
+            new_print('INFO', f"Current gas fee {eth_gwei} gwei > {max_gwei} gwei. Waiting for 17 seconds...")
+            time.sleep(17)
 
 
 def to_data(string: str):
@@ -75,7 +79,6 @@ def initializer_generator(owners_count: int, wallets: list):
 
 def create_safe(private: str, additional_addresses: list):
     address = web3.eth.account.from_key(private).address
-    print([address,],additional_addresses)
     safe_addresses = [address,] + additional_addresses
 
     if type(safe_owner_count).__name__ != 'tuple' and type(safe_owner_count).__name__ != 'int':
@@ -87,19 +90,21 @@ def create_safe(private: str, additional_addresses: list):
         initializer = initializer_generator(safe_owner_count, safe_addresses)
 
     try:
+        wait_normal_gwei()
         tx = safe_contract.functions.createProxyWithNonce(
             '0xfb1bffC9d739B8D520DaF37dF666da4C687191EA', initializer, int(time.time()*1000)
         ).build_transaction({
             'from': address,
             'nonce': web3.eth.get_transaction_count(address),
-            'gasPrice': web3.eth.gas_price,
+            'gasPrice': web3.eth.gas_price if chain in ['op', 'era', 'base', 'eth', 'polygon', 'arb']
+            else web3.to_wei(1, 'gwei'),
             'chainId': web3.eth.chain_id,
         })
 
         tx_create = web3.eth.account.sign_transaction(tx, private)
         tx_hash = web3.eth.send_raw_transaction(tx_create.rawTransaction)
         new_print(address, f'Safe created: {tx_hash.hex()}')
-        write_to_file('safe created hashes .txt', f'{private};{address};{tx_hash.hex()}')
+        write_to_file('safe created hashes.txt', f'{private};{address};{tx_hash.hex()}')
     except Exception as error:
         new_print(address, f'Error: {error}', is_error=True)
 
