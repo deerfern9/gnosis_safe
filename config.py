@@ -1,4 +1,4 @@
-# op | era | base | polygon | eht | bsc | arb
+# op | era | base | polygon | eth | bsc | arb
 chain = 'bsc'
 
 # owners of gnosis safe 1 - one stable owner / (1, 10) random up to 10 owners
@@ -28,7 +28,7 @@ safe_addresses = {
     'op': '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
     'era': '0xDAec33641865E4651fB43181C6DB6f7232Ee91c2',
     'base': '0xC22834581EbC8527d974F8a1c97E1bEA4EF910BC',
-    'eht': '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
+    'eth': '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
     'polygon': '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
     'bsc': '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
     'arb': '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2',
